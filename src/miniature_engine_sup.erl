@@ -23,18 +23,22 @@
     period    => 10
 }).
 
--define(CHILD(I, Type), #{
-    id       => I,
-    start    => {I, start_link, []},
+-define(CHILD(Id, Mod, Args), #{
+    id       => Id,
+    start    => {Mod, start_link, Args},
     restart  => permanent,
     shutdown => 5000,
-    type     => Type,
-    modules  => [I]
+    type     => supervisor,
+    modules  => [Mod]
 }).
 
+-define(CHILD(I), ?CHILD(I, I, [])).
+
 -define(CHILDREN, [
-    ?CHILD(miniature_engine_cowboy_sup, supervisor),
-    ?CHILD(miniature_engine_subscriber_sup, supervisor)
+    ?CHILD(miniature_engine_cowboy_sup),
+    ?CHILD(miniature_engine_producer_sup, miniature_engine_brod_sup, [miniature_engine_producer]),
+    ?CHILD(miniature_engine_consumer_sup, miniature_engine_brod_sup, [miniature_engine_consumer]),
+    ?CHILD(miniature_engine_subscriber_sup)
 ]).
 
 start_link() ->
