@@ -15,34 +15,29 @@
     init/1
 ]).
 
--define(SERVER, ?MODULE).
-
 -define(FLAGS, #{
     strategy  => one_for_one,
     intensity => 5,
     period    => 10
 }).
 
--define(CHILD(Id, Mod, Args), #{
-    id       => Id,
-    start    => {Mod, start_link, Args},
+-define(CHILD(I, Type), #{
+    id       => I,
+    start    => {I, start_link, []},
     restart  => permanent,
     shutdown => 5000,
-    type     => supervisor,
-    modules  => [Mod]
+    type     => Type,
+    modules  => [I]
 }).
 
--define(CHILD(I), ?CHILD(I, I, [])).
-
 -define(CHILDREN, [
-    ?CHILD(miniature_engine_cowboy_sup),
-    ?CHILD(miniature_engine_producer_sup, miniature_engine_brod_sup, [miniature_engine_producer]),
-    ?CHILD(miniature_engine_consumer_sup, miniature_engine_brod_sup, [miniature_engine_consumer]),
-    ?CHILD(miniature_engine_subscriber_sup)
+    ?CHILD(miniature_engine_subscriber, worker)
 ]).
 
+-define(SUPERVISOR, ?MODULE).
+
 start_link() ->
-    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, []).
 
 init([]) ->
     {ok, {?FLAGS, ?CHILDREN}}.

@@ -1,18 +1,7 @@
 [
-    {kernel, [
-        {logger, [
-            {handler, default, logger_std_h, #{
-                % formatter => {logger_formatter, #{
-                %     %% template => [time, " ", pid, " ", msg, "\n"],
-                %     single_line => true
-                % }},
-                level => info
-            }}
-        ]}
-    ]},
-
     {miniature_engine, [
         {port, ${PORT}},
+        {log_level, ${LOG_LEVEL}},
         {kafka_endpoints, <<"${KAFKA_SERVERS}">>},
         {jwt_key, <<"${JWT_KEY}">>},
         {user_claim_key, <<"user_uid">>},
